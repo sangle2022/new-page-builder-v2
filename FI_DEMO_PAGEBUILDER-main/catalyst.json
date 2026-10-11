@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "targets": [
+      "authentication",
+      "verification",
+      "page_builder_function",
+      "integration",
+      "migration"
+    ],
+    "ignore": [],
+    "source": "functions"
+  },
+  "client": {
+    "source": "page-builder",
+    "plugin": "zcatalyst-cli-plugin-react"
+  }
+}

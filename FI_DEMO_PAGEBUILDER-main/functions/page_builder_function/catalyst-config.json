@@ -1,0 +1,20 @@
+{
+	"deployment": {
+		"name": "page_builder_function",
+		"stack": "node18",
+		"type": "advancedio",
+		"env_variables": {
+			"client_id": "1000.YUYUE1MA2D8KZ2XVGFR8B1TLAV9R8E",
+			"client_secret": "e7801223cffc4f08379e76ab549e3d8eae0e38d9b2",
+			"auth_url": "https://accounts.zoho.com/oauth/v2/token",
+			"refresh_url": "https://accounts.zoho.com/oauth/v2/token",
+			"refresh_token": "1000.0e2acaadd0aac833db7f4570658596fe.4c7b65267c02f009fab45231604dc7f5",
+			"STRATUS_BUCKET": "fi-digital-pages",
+			"MEDIA_BUCKET": "cms-file",
+			"ZOHO_ORG_ID": "10090242015"
+		}
+	},
+	"execution": {
+		"main": "index.js"
+	}
+}

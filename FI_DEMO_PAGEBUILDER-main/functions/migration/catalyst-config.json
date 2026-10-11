@@ -1,0 +1,13 @@
+{
+	"deployment": {
+		"name": "migration",
+		"stack": "node20",
+		"type": "advancedio",
+		"env_variables": {
+			"STRATUS_BUCKET": "fi-digital-pages"
+		}
+	},
+	"execution": {
+		"main": "index.js"
+	}
+}
