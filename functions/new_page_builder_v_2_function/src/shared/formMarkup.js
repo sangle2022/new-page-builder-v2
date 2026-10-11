@@ -1,0 +1,226 @@
+'use strict';
+
+// Lead form markup. The builder client uses a generated copy of this file
+// (page-builder/src/builder/formMarkup.js); run `node scripts/sync-shared.js`
+// after changing it.
+//
+// A form is plain HTML inside the page so it stays editable in GrapesJS and
+// by AI. Configuration lives in data-* attributes:
+//   form.pb-form[data-pb-form]   data-pb-success, data-pb-redirect,
+//                                data-pb-steps="true" (multi step),
+//                                data-pb-captcha="true"
+//   .pb-form-step[data-step]     optional step groups with a title
+//   .pb-field[data-pb-field]     data-name, data-type, data-label,
+//                                data-required, data-options ("a|b|c"),
+//                                data-placeholder, data-width, data-otp
+// The published-page runtime reads these to validate and submit.
+
+const { escapeHtml: e, slugify } = require('../utils/text');
+
+const FIELD_TYPES = ['text', 'email', 'tel', 'number', 'date', 'textarea', 'select', 'radio', 'checkbox', 'consent', 'pincode', 'hidden'];
+
+const fieldName = (label) => slugify(String(label || 'field').replace(/_/g, ' '), 40).replace(/-/g, '_');
+
+function normalizeField(f = {}) {
+  const type = FIELD_TYPES.includes(f.type) ? f.type : 'text';
+  const label = f.label || f.name || 'Field';
+  return {
+    label,
+    name: f.name ? fieldName(f.name) : fieldName(label),
+    type,
+    required: f.required === true || f.required === 'true' || f.required === 'yes',
+    placeholder: f.placeholder || '',
+    options: Array.isArray(f.options) ? f.options.filter(Boolean).map(String) : String(f.options || '').split('|').filter(Boolean),
+    width: f.width === 'half' ? 'half' : 'full',
+    otp: type === 'tel' && (f.otp === true || f.otp === 'true'),
+    value: f.value || '',
+  };
+}
+
+function controlHtml(f, id) {
+  const req = f.required ? ' required' : '';
+  const ph = f.placeholder ? ` placeholder="${e(f.placeholder)}"` : '';
+  switch (f.type) {
+    case 'textarea':
+      return `<textarea id="${id}" name="${e(f.name)}"${ph}${req}></textarea>`;
+    case 'select':
+      return `<select id="${id}" name="${e(f.name)}"${req}><option value="">${e(f.placeholder || 'Select an option')}</option>${f.options
+        .map((o) => `<option value="${e(o)}">${e(o)}</option>`)
+        .join('')}</select>`;
+    case 'radio':
+    case 'checkbox':
+      return `<div class="pb-field__options">${f.options
+        .map(
+          (o) =>
+            `<label><input type="${f.type}" name="${e(f.name)}" value="${e(o)}"${f.type === 'radio' ? req : ''}> ${e(o)}</label>`,
+        )
+        .join('')}</div>`;
+    case 'pincode':
+      return `<input id="${id}" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" name="${e(f.name)}" data-pb-pincode="true"${ph}${req}>`;
+    case 'tel':
+      return `<input id="${id}" type="tel" inputmode="tel" name="${e(f.name)}"${f.otp ? ' data-pb-otp="true"' : ''}${ph}${req}>`;
+    case 'hidden':
+      return `<input type="hidden" name="${e(f.name)}" value="${e(f.value)}">`;
+    default:
+      return `<input id="${id}" type="${f.type}" name="${e(f.name)}"${ph}${req}>`;
+  }
+}
+
+function fieldHtml(input) {
+  const f = normalizeField(input);
+  const id = `pb-f-${f.name}`;
+  const classes = ['pb-field'];
+  if (f.width === 'half') classes.push('pb-field--half');
+  if (f.type === 'consent') classes.push('pb-field--consent');
+  const attrs =
+    `data-pb-field="true" data-name="${e(f.name)}" data-type="${f.type}" data-label="${e(f.label)}" ` +
+    `data-required="${f.required}" data-options="${e(f.options.join('|'))}" data-placeholder="${e(f.placeholder)}" ` +
+    `data-width="${f.width}" data-otp="${f.otp}"`;
+  const star = f.required ? '<span class="pb-req">*</span>' : '';
+
+  let inner;
+  if (f.type === 'consent') {
+    inner = `<label><input type="checkbox" name="${e(f.name)}" value="yes"${f.required ? ' required' : ''}><span>${e(f.label)}</span></label>`;
+  } else if (f.type === 'hidden') {
+    inner = controlHtml(f, id);
+  } else if (f.type === 'radio' || f.type === 'checkbox') {
+    inner = `<span class="pb-field__label">${e(f.label)}${star}</span>${controlHtml(f, id)}`;
+  } else {
+    inner = `<label for="${id}">${e(f.label)}${star}</label>${controlHtml(f, id)}`;
+  }
+  return `<div class="${classes.join(' ')}" ${attrs}>${inner}</div>`;
+}
+
+const DEFAULT_FIELDS = [
+  { label: 'Full name', type: 'text', required: true, width: 'half' },
+  { label: 'Mobile number', type: 'tel', required: true, width: 'half' },
+  { label: 'Email', type: 'email', required: true },
+  { label: 'I agree to be contacted about this enquiry', name: 'consent', type: 'consent', required: true },
+];
+
+// fields: [{label,type,...,step}] ; options: submitLabel, successMessage,
+// redirectUrl, steps: ['About you', 'Your requirement'], single (1 column)
+function formHtml(fields = DEFAULT_FIELDS, opts = {}) {
+  const list = (fields && fields.length ? fields : DEFAULT_FIELDS).map((f) => ({ ...f, step: Number(f.step) || 1 }));
+  const stepTitles = Array.isArray(opts.steps) ? opts.steps.filter(Boolean) : [];
+  const maxStep = Math.max(1, ...list.map((f) => f.step));
+  const multi = maxStep > 1 || stepTitles.length > 1;
+  const success = opts.successMessage || "Thank you! We've received your details and will get in touch shortly.";
+
+  let body;
+  if (multi) {
+    const count = Math.max(maxStep, stepTitles.length);
+    body = Array.from({ length: count }, (_, i) => {
+      const n = i + 1;
+      const title = stepTitles[i] || `Step ${n}`;
+      const stepFields = list.filter((f) => f.step === n).map(fieldHtml).join('');
+      return `<div class="pb-form-step" data-step="${n}" data-title="${e(title)}"><div class="pb-form-step__title">${e(title)}</div>${stepFields}</div>`;
+    }).join('');
+  } else {
+    body = list.map(fieldHtml).join('');
+  }
+
+  return (
+    `<form class="pb-form${opts.single ? ' pb-form--single' : ''}" data-pb-form="lead" data-pb-success="${e(success)}" ` +
+    `data-pb-redirect="${e(opts.redirectUrl || '')}" data-pb-steps="${multi}" data-pb-captcha="${opts.captcha === true}" novalidate>` +
+    `<div class="pb-form-fields">${body}</div>` +
+    `<div class="pb-form-actions"><button type="submit" class="pb-btn pb-btn--primary pb-btn--block pb-form-submit">${e(
+      opts.submitLabel || 'Submit',
+    )}</button></div>` +
+    `</form>`
+  );
+}
+
+// V1 stored forms as Pages.stepformdata: [{name, type, required:'yes', options,
+// step, otpValidation:'yes', captchaValidation:'yes'}] and the viewer injected
+// them into a .dynamic-form placeholder. Convert to V2 fields.
+const V1_TYPES = {
+  phone: 'tel', dropdown: 'select', multiSelect: 'checkbox', amountValidator: 'number',
+  text: 'text', email: 'email', date: 'date', number: 'number', radio: 'radio', pincode: 'pincode',
+};
+
+function fromLegacyStepForm(stepformdata) {
+  const list = Array.isArray(stepformdata) ? stepformdata : [];
+  const otp = list.some((f) => f && f.otpValidation === 'yes');
+  const captcha = list.some((f) => f && f.captchaValidation === 'yes');
+  const fields = list
+    .filter((f) => f && f.name && V1_TYPES[f.type])
+    .map((f) =>
+      normalizeField({
+        label: f.name,
+        type: V1_TYPES[f.type],
+        required: f.required === 'yes' || f.required === true,
+        options: f.options,
+        otp: otp && f.type === 'phone',
+      }),
+    )
+    .map((f, i) => ({ ...f, step: Number(list.filter((x) => x && x.name && V1_TYPES[x.type])[i].step) || 1 }));
+  return { fields, captcha };
+}
+
+// Put a V2 form where the V1 viewer used to mount its React form, or append
+// a form section when the page has no placeholder.
+function injectLegacyForm(bodyHtml, form) {
+  const re = /(<div[^>]*class="[^"]*\bdynamic-form\b[^"]*"[^>]*>)([\s\S]*?)(<\/div>)/i;
+  if (re.test(bodyHtml)) return bodyHtml.replace(re, (m, open, inner, close) => `${open}${form}${close}`);
+  return `${bodyHtml}<section class="pb-section pb-section--alt" data-pb-section="lead_form"><div class="pb-container pb-container--narrow"><div class="pb-form-card" id="lead-form">${form}</div></div></section>`;
+}
+
+// Derive the form definition (FormConfig) from page HTML. The server uses
+// this rather than trusting a client-sent list, so lead validation always
+// matches what visitors actually see. Fields keep their step number.
+function formConfigFromHtml(html) {
+  const decode = (s) =>
+    String(s || '')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+  const attr = (tag, name) => {
+    const m = tag.match(new RegExp(`\\s${name}="([^"]*)"`, 'i'));
+    return m ? decode(m[1]) : '';
+  };
+  const out = [];
+  const seen = new Set();
+  let step = 1;
+  const re = /<form\b[^>]*>|<[a-z]+\b[^>]*\bclass="[^"]*\bpb-form-step\b[^"]*"[^>]*>|<[a-z]+\b[^>]*\bdata-pb-field="true"[^>]*>/gi;
+  let m;
+  // eslint-disable-next-line no-cond-assign
+  while ((m = re.exec(String(html || '')))) {
+    const tag = m[0];
+    if (/^<form\b/i.test(tag)) {
+      step = 1;
+    } else if (/data-pb-field="true"/.test(tag)) {
+      const f = normalizeField({
+        name: attr(tag, 'data-name'),
+        label: attr(tag, 'data-label'),
+        type: attr(tag, 'data-type'),
+        required: attr(tag, 'data-required'),
+        options: attr(tag, 'data-options'),
+        placeholder: attr(tag, 'data-placeholder'),
+        width: attr(tag, 'data-width'),
+        otp: attr(tag, 'data-otp'),
+      });
+      if (!seen.has(f.name)) {
+        seen.add(f.name);
+        out.push({ ...f, step });
+      }
+    } else {
+      step = Number(attr(tag, 'data-step')) || step + 1;
+    }
+  }
+  return out;
+}
+
+module.exports = {
+  FIELD_TYPES,
+  DEFAULT_FIELDS,
+  normalizeField,
+  fieldHtml,
+  formHtml,
+  fieldName,
+  fromLegacyStepForm,
+  injectLegacyForm,
+  formConfigFromHtml,
+};

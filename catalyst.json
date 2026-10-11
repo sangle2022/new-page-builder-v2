@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "targets": [
+      "new_page_builder_v_2_function",
+      "pb_ai_job"
+    ],
+    "ignore": [],
+    "source": "functions"
+  },
+  "client": {
+    "source": "page-builder",
+    "plugin": "zcatalyst-cli-plugin-react"
+  }
+}

@@ -1,0 +1,165 @@
+'use strict';
+
+// Banking & Finance templates: loan and card campaigns built for lead
+// generation (eligibility forms with OTP, pincode and product choice).
+// Same page-spec format as templates.js.
+
+const consent = { label: 'I agree to be contacted by phone, email, SMS or WhatsApp about this enquiry, even if I am registered on DND', name: 'consent', type: 'consent', required: true };
+const legal = 'Loans are at the sole discretion of the lender and subject to credit appraisal, eligibility and documentation. Interest rates and charges are indicative and may change. T&C apply.';
+
+module.exports = [
+  {
+    key: 'bank-personal-loan',
+    name: 'Personal loan campaign',
+    category: 'Banking & Finance',
+    description: 'Instant personal loan campaign with a two-step eligibility form (OTP on mobile), rate cards, EMI benefits and trust signals.',
+    theme: { primary: '#0B4FD6', accent: '#16C784', dark: '#061634', font: 'Inter', headingFont: 'Outfit', radius: '16px' },
+    sections: [
+      { type: 'navbar', variant: 'dark', brandName: 'Nova Finance', items: [{ title: 'Why us', href: '#features' }, { title: 'Rates', href: '#pricing' }, { title: 'FAQ', href: '#faq' }], ctaLabel: 'Check eligibility' },
+      {
+        type: 'hero', variant: 'split-form', background: 'gradient',
+        eyebrow: 'Pre-approved offers · Up to ₹40 lakh',
+        heading: 'A personal loan that lands in your account today',
+        subheading: 'Interest from 10.25% p.a., tenure up to 6 years and a 100% digital process. No branch visits, no paperwork piles.',
+        items: [{ icon: '⚡', title: 'Approval in 10 minutes' }, { icon: '🔒', title: 'RBI-regulated lender' }, { icon: '📄', title: 'Paperless KYC' }],
+        formTitle: 'Check your eligibility',
+        formSubtitle: 'Takes 60 seconds. Does not affect your credit score.',
+        formSteps: ['About you', 'Loan details'],
+        formFields: [
+          { label: 'Full name (as on PAN)', type: 'text', required: true, step: 1 },
+          { label: 'Mobile number', type: 'tel', required: true, width: 'half', otp: true, step: 1 },
+          { label: 'Pincode', type: 'pincode', required: true, width: 'half', step: 1 },
+          { label: 'Email', type: 'email', required: true, step: 1 },
+          { label: 'Loan amount needed', type: 'select', options: ['Up to ₹3 lakh', '₹3–7 lakh', '₹7–15 lakh', '₹15–40 lakh'], required: true, step: 2 },
+          { label: 'Employment type', type: 'radio', options: ['Salaried', 'Self-employed professional', 'Business owner'], required: true, step: 2 },
+          { label: 'Net monthly income (₹)', type: 'number', required: true, width: 'half', step: 2 },
+          { label: 'Loan purpose', type: 'select', options: ['Wedding', 'Travel', 'Medical', 'Home renovation', 'Debt consolidation', 'Other'], required: false, width: 'half', step: 2 },
+          { ...consent, step: 2 },
+        ],
+        formSubmitLabel: 'See my offer',
+        successMessage: 'Thank you! Your loan expert will call you within 15 minutes with your personalised offer.',
+      },
+      { type: 'stats', variant: 'cards', background: 'light', items: [{ value: '25 lakh+', label: 'Happy borrowers' }, { value: '₹12,000 Cr', label: 'Disbursed so far' }, { value: '10 min', label: 'Average approval time' }, { value: '4.8★', label: 'App store rating' }] },
+      {
+        type: 'features', variant: 'bento', background: 'alt', heading: 'Built around what borrowers actually need', subheading: 'Clear pricing, quick money and an EMI that fits your month.',
+        items: [
+          { icon: '💸', title: 'Money in 24 hours', text: 'Funds are credited straight to your bank account after e-sign.' },
+          { icon: '🧾', title: 'Zero hidden charges', text: 'Processing fee and interest are shown before you accept.' },
+          { icon: '📆', title: 'Flexible EMIs', text: 'Choose 12 to 72 months and change your EMI date once a year.' },
+          { icon: '🎁', title: 'Part-pay anytime', text: 'Prepay after 6 EMIs with no foreclosure charges.' },
+          { icon: '🛡️', title: 'Bank-grade security', text: '256-bit encryption; your data is never sold.' },
+          { icon: '🤝', title: 'A real person to help', text: 'A dedicated relationship manager from application to disbursal.' },
+        ],
+      },
+      { type: 'steps', background: 'light', heading: 'Your loan in 3 simple steps', items: [{ title: 'Check eligibility', text: 'Share a few details and verify your mobile with OTP.' }, { title: 'Complete video KYC', text: 'PAN, Aadhaar and income proof, uploaded from your phone.' }, { title: 'E-sign and receive funds', text: 'Accept the offer and get the money within 24 hours.' }] },
+      {
+        type: 'pricing', anchorId: 'pricing', background: 'alt', heading: 'Transparent rates for every profile',
+        items: [
+          { title: 'Salaried', price: '10.25%', period: 'p.a. onwards', text: 'For employees of listed and MNC companies.', features: ['Loan up to ₹40 lakh', 'Tenure up to 72 months', 'Processing fee from 1%'], featured: true },
+          { title: 'Self-employed', price: '12.50%', period: 'p.a. onwards', text: 'For doctors, CAs and business owners.', features: ['Loan up to ₹30 lakh', 'Tenure up to 60 months', 'ITR-based eligibility'] },
+          { title: 'Top-up loan', price: '10.99%', period: 'p.a. onwards', text: 'For existing customers with a good repayment track.', features: ['Instant pre-approved limit', 'No new documents', 'Same-day credit'] },
+        ],
+      },
+      { type: 'testimonials', background: 'light', heading: 'Borrowers who switched to Nova', items: [{ text: 'Applied on my lunch break and had the money for my sister’s wedding the next morning.', author: 'Rohit M.', role: 'Software engineer, Pune' }, { text: 'The EMI calculator was spot on, and there were no surprise charges at all.', author: 'Anjali V.', role: 'Doctor, Chennai' }, { text: 'Consolidated three credit card bills into one EMI and saved ₹4,200 a month.', author: 'Imran S.', role: 'Business owner, Hyderabad' }] },
+      { type: 'faq', variant: 'split', anchorId: 'faq', background: 'alt', heading: 'Questions, answered', items: [{ title: 'Will checking eligibility affect my credit score?', text: 'No. We run a soft check that is not visible to other lenders.' }, { title: 'What is the minimum income needed?', text: '₹25,000 net monthly income for salaried applicants in metro cities.' }, { title: 'What documents do I need?', text: 'PAN, Aadhaar, last 3 months’ salary slips and 6 months’ bank statement.' }, { title: 'Can I prepay the loan?', text: 'Yes, after 6 EMIs with zero foreclosure charges.' }] },
+      { type: 'cta', variant: 'band', background: 'gradient', heading: 'Your pre-approved offer is waiting', subheading: 'Check it in 60 seconds, with no impact on your credit score.', ctaLabel: 'Check eligibility now' },
+      { type: 'footer', variant: 'columns', brandName: 'Nova Finance', body: 'Personal loans offered in partnership with RBI-registered banks and NBFCs.', legal, items: [{ title: 'Interest rates & charges', href: '#pricing' }, { title: 'Grievance redressal', href: '#' }, { title: 'Privacy policy', href: '#' }] },
+    ],
+  },
+  {
+    key: 'bank-home-loan',
+    name: 'Home loan & balance transfer',
+    category: 'Banking & Finance',
+    description: 'Home loan and balance-transfer campaign with EMI savings story, property details form, rate comparison and expert callback.',
+    theme: { primary: '#0E5A4F', accent: '#F2A93B', dark: '#062A25', font: 'Inter', headingFont: 'Playfair Display', radius: '18px' },
+    sections: [
+      { type: 'navbar', variant: 'simple', brandName: 'Griha Home Finance', items: [{ title: 'Benefits', href: '#features' }, { title: 'Balance transfer', href: '#transfer' }, { title: 'Apply', href: '#lead-form' }], ctaLabel: 'Get a callback' },
+      {
+        type: 'hero', variant: 'split-image', background: 'light',
+        eyebrow: 'Home loans from 8.35% p.a.',
+        heading: 'The keys to your new home, with an EMI you will barely notice',
+        subheading: 'Loans up to ₹10 crore, tenure up to 30 years and sanction in 48 hours. Already paying more elsewhere? Switch and save.',
+        ctaLabel: 'Check my eligibility', ctaHref: '#lead-form', secondaryCtaLabel: 'Transfer my loan',
+        imagePrompt: 'happy young indian couple holding house keys in front of their new modern apartment building, warm sunlight, professional photography',
+        items: [{ icon: '🏠', title: 'PMAY subsidy support' }, { icon: '✅', title: 'Doorstep service' }],
+      },
+      { type: 'stats', variant: 'plain', background: 'alt', items: [{ value: '8.35%', label: 'Interest rate onwards' }, { value: '30 yrs', label: 'Maximum tenure' }, { value: '48 hrs', label: 'In-principle sanction' }, { value: '₹0', label: 'Prepayment charges (floating)' }] },
+      { type: 'features', variant: 'cards', background: 'light', heading: 'Why home buyers choose Griha', items: [{ icon: '📉', title: 'Lower EMIs', text: 'Step-up EMIs for young professionals: pay less now, more as you grow.' }, { icon: '🏗️', title: 'Every property type', text: 'Ready, under-construction, resale, plot plus construction and renovation.' }, { icon: '🧑‍💼', title: 'Dedicated expert', text: 'One home loan expert handles legal, technical and disbursal for you.' }] },
+      {
+        type: 'media_text', variant: 'image-right', anchorId: 'transfer', background: 'alt',
+        eyebrow: 'Balance transfer', heading: 'Paying more than 9% on your home loan? You could save lakhs.',
+        body: 'Move your existing home loan to Griha and get a lower rate plus a top-up for renovation or other needs, with no fresh property paperwork.',
+        items: [{ title: 'Save up to ₹6.2 lakh on a ₹50 lakh loan' }, { title: 'Top-up loan up to ₹50 lakh at home loan rates' }, { title: 'We coordinate with your current bank' }],
+        imagePrompt: 'calm indian man reviewing home loan savings on a tablet in a bright modern living room',
+        ctaLabel: 'Calculate my savings',
+      },
+      { type: 'steps', background: 'light', heading: 'From application to keys', items: [{ title: 'Share your details', text: 'Tell us about the property and your income.' }, { title: 'Get sanction in 48 hours', text: 'Upload documents and receive an in-principle sanction letter.' }, { title: 'Property check', text: 'Our team completes legal and technical checks.' }, { title: 'Disbursal', text: 'Funds go to the builder or seller as per schedule.' }] },
+      {
+        type: 'lead_form', variant: 'split-text', background: 'primary',
+        heading: 'Talk to a home loan expert', body: 'Get your eligibility, best rate and EMI options on one call. No obligation.',
+        items: [{ title: 'Free eligibility check' }, { title: 'Rate locked for 30 days' }, { title: 'Doorstep document pickup' }],
+        formTitle: 'Request a callback',
+        formFields: [
+          { label: 'Full name', type: 'text', required: true, width: 'half' },
+          { label: 'Mobile number', type: 'tel', required: true, width: 'half', otp: true },
+          { label: 'Email', type: 'email', required: true, width: 'half' },
+          { label: 'Property pincode', type: 'pincode', required: true, width: 'half' },
+          { label: 'I am looking for', type: 'select', options: ['New home loan', 'Balance transfer', 'Balance transfer + top-up', 'Plot + construction', 'Home renovation'], required: true },
+          { label: 'Loan amount (₹)', type: 'number', required: true, width: 'half' },
+          { label: 'Employment', type: 'select', options: ['Salaried', 'Self-employed'], required: true, width: 'half' },
+          consent,
+        ],
+        formSubmitLabel: 'Call me back',
+        successMessage: 'Thanks! A home loan expert will call you within 2 working hours.',
+      },
+      { type: 'testimonials', variant: 'single', background: 'light', items: [{ text: 'We transferred our loan from another bank and our EMI dropped by ₹7,800 a month. Griha handled everything with the old bank.', author: 'Meera & Arjun P.', role: 'Homeowners, Bengaluru' }] },
+      { type: 'faq', variant: 'stacked', background: 'alt', heading: 'Home loan FAQs', items: [{ title: 'How much loan can I get?', text: 'Up to 90% of the property value, based on your income and existing EMIs.' }, { title: 'Can my spouse be a co-applicant?', text: 'Yes. Adding an earning co-applicant increases eligibility, and women co-owners may get a lower rate.' }, { title: 'Are there prepayment charges?', text: 'None on floating-rate home loans for individual borrowers.' }, { title: 'Which documents are needed for a balance transfer?', text: 'Your loan statement, sanction letter, list of property documents and income proof.' }] },
+      { type: 'footer', variant: 'simple', brandName: 'Griha Home Finance', legal },
+    ],
+  },
+  {
+    key: 'bank-festive-offer',
+    name: 'Festive loan & card offers',
+    category: 'Banking & Finance',
+    description: 'Limited-period festive campaign for gold loans, car loans and credit cards with countdown, product cards and a quick-apply form.',
+    theme: { primary: '#6D28D9', accent: '#F59E0B', dark: '#1B0B3A', font: 'Poppins', headingFont: 'Poppins', radius: '20px' },
+    sections: [
+      {
+        type: 'hero', variant: 'background-image',
+        eyebrow: 'Festive offers · Valid till 15 November',
+        heading: 'Celebrate bigger with festive rates on loans and cards',
+        subheading: 'Zero processing fee on car and gold loans, lifetime-free credit cards and instant approvals, only this festive season.',
+        ctaLabel: 'Grab my offer', ctaHref: '#lead-form', secondaryCtaLabel: 'See all offers',
+        imagePrompt: 'festive diwali celebration with lamps and lights, happy indian family next to a new car, purple and gold tones, cinematic',
+      },
+      { type: 'countdown', background: 'dark', heading: 'Festive offers end in', subheading: 'Apply before the timer ends to lock in the special rates.', targetDate: '2026-11-15', ctaLabel: 'Apply now' },
+      {
+        type: 'pricing', background: 'light', heading: 'Pick your festive offer',
+        items: [
+          { title: 'Gold loan', price: '0.79%', period: 'per month', text: 'Money against your gold in 30 minutes.', features: ['Up to ₹1 crore', 'Zero processing fee', 'Gold kept in insured vaults'] },
+          { title: 'Car loan', price: '8.65%', period: 'p.a. onwards', text: 'Drive home your new car this festive season.', features: ['100% on-road funding', 'Zero processing fee', 'Tenure up to 7 years'], featured: true },
+          { title: 'Credit card', price: '₹0', period: 'lifetime free', text: 'Rewards on every festive purchase.', features: ['10X rewards on shopping', '5% cashback on fuel', 'Airport lounge access'] },
+        ],
+      },
+      { type: 'features', variant: 'icons', background: 'alt', heading: 'Why apply during the festive season', items: [{ icon: '🪔', title: 'Special festive pricing', text: 'Lower rates and fee waivers, for a limited period only.' }, { icon: '⚡', title: 'Instant approval', text: 'Pre-approved customers get a decision in minutes.' }, { icon: '🎁', title: 'Bonus rewards', text: 'Extra rewards and vouchers worth up to ₹5,000.' }, { icon: '📱', title: 'Apply from your phone', text: 'Video KYC and e-sign, with no branch visit.' }] },
+      {
+        type: 'lead_form', variant: 'card', background: 'light',
+        heading: 'Claim your festive offer', subheading: 'Tell us what you need and we will share the best offer for you.',
+        formTitle: 'Quick apply',
+        formFields: [
+          { label: 'Full name', type: 'text', required: true, width: 'half' },
+          { label: 'Mobile number', type: 'tel', required: true, width: 'half', otp: true },
+          { label: 'Product', type: 'radio', options: ['Gold loan', 'Car loan', 'Credit card'], required: true },
+          { label: 'City', type: 'text', required: true, width: 'half' },
+          { label: 'Pincode', type: 'pincode', required: true, width: 'half' },
+          consent,
+        ],
+        formSubmitLabel: 'Get my festive offer',
+        successMessage: 'Your festive offer is reserved! Our team will call you shortly.',
+      },
+      { type: 'testimonials', variant: 'cards', background: 'alt', heading: 'Customers celebrating with us', items: [{ text: 'Got the car loan approved in a day and took delivery on Dhanteras.', author: 'Prakash N.', role: 'Car loan, Ahmedabad' }, { text: 'The gold loan was ready in 30 minutes, at a much better rate than my local lender.', author: 'Sunita R.', role: 'Gold loan, Jaipur' }] },
+      { type: 'faq', variant: 'split', background: 'light', heading: 'Offer details', items: [{ title: 'Who is eligible for the festive offers?', text: 'Indian residents aged 21–60 with a regular income. Final approval depends on the lender’s credit assessment.' }, { title: 'Till when are the offers valid?', text: 'Applications submitted until 15 November 2026 and disbursed by 30 November 2026.' }, { title: 'Is the credit card really lifetime free?', text: 'Yes, there is no joining or annual fee for cards issued during the offer period.' }] },
+      { type: 'footer', variant: 'centered', brandName: 'Utsav Bank', legal: `${legal} Credit cards are subject to the issuer’s approval. Gold loan rate shown is for loans above ₹5 lakh.` },
+    ],
+  },
+];

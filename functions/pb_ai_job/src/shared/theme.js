@@ -1,0 +1,92 @@
+'use strict';
+
+// Page theme -> CSS variables. One definition for the published page
+// (pageStyles/pageDocument), the editor canvas (generated copy in the client,
+// see scripts/sync-shared.js) and AI theme changes (pageGeneration cleanTheme).
+//
+// Theme keys: primary, accent, dark, background, surface, text, muted, card,
+// mode ("light" | "dark"), font, headingFont, radius.
+// A dark background (or mode "dark") switches text, cards and borders to
+// dark-mode defaults unless they are set explicitly.
+
+const FONT_NAMES = ['Inter', 'Poppins', 'Montserrat', 'Lato', 'Playfair Display', 'Merriweather', 'DM Sans', 'Outfit'];
+
+const NAMED_COLORS = {
+  black: '#000000', white: '#ffffff', red: '#DC2626', blue: '#2563EB', 'sky blue': '#0EA5E9', skyblue: '#0EA5E9',
+  navy: '#0B1B33', green: '#16A34A', 'deep green': '#064E3B', teal: '#0D9488', purple: '#7C3AED', violet: '#7C3AED',
+  orange: '#EA580C', yellow: '#EAB308', gold: '#C9A227', pink: '#DB2777', grey: '#6B7280', gray: '#6B7280',
+  maroon: '#7F1D1D', brown: '#78350F', beige: '#F5F0E6', cream: '#FFF8EC',
+};
+
+const LIGHT = { background: '#ffffff', surface: '#F4F7FB', text: '#0F172A', muted: '#5B6474', card: '#ffffff', border: 'rgba(15,23,42,.09)' };
+const DARK = { background: '#0B1020', surface: '#111827', text: '#F1F5F9', muted: '#9AA4B8', card: '#151C2C', border: 'rgba(255,255,255,.10)' };
+const COLOR_KEYS = ['primary', 'accent', 'dark', 'background', 'surface', 'text', 'muted', 'card'];
+
+function normalizeColor(value) {
+  const v = String(value || '').trim().toLowerCase();
+  if (!v) return null;
+  if (NAMED_COLORS[v]) return NAMED_COLORS[v];
+  const short = v.match(/^#?([0-9a-f])([0-9a-f])([0-9a-f])$/);
+  if (short) return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`.toUpperCase();
+  const long = v.match(/^#?([0-9a-f]{6})$/);
+  if (long) return `#${long[1]}`.toUpperCase();
+  const rgb = v.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/);
+  if (rgb) return `#${[rgb[1], rgb[2], rgb[3]].map((n) => Math.min(255, Number(n)).toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+  return null;
+}
+
+// 0 (black) .. 1 (white)
+function luminance(hex) {
+  const m = String(hex || '').match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if (!m) return 1;
+  const [r, g, b] = [m[1], m[2], m[3]].map((x) => parseInt(x, 16) / 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+// Keep only valid theme values (used on AI output and saved settings).
+function normalizeTheme(input = {}) {
+  const t = input || {};
+  const out = {};
+  COLOR_KEYS.forEach((k) => {
+    const c = normalizeColor(t[k]);
+    if (c) out[k] = c;
+  });
+  if (t.mode === 'dark' || t.mode === 'light') out.mode = t.mode;
+  if (FONT_NAMES.includes(t.font)) out.font = t.font;
+  if (FONT_NAMES.includes(t.headingFont)) out.headingFont = t.headingFont;
+  if (/^\d{1,2}px$/.test(String(t.radius || ''))) out.radius = t.radius;
+  return out;
+}
+
+// Theme -> { '--pb-primary': '#…', … }
+function themeVarsObject(theme = {}) {
+  const t = theme || {};
+  const background = normalizeColor(t.background);
+  const dark = t.mode === 'dark' || (!t.mode && background && luminance(background) < 0.35);
+  const base = dark ? DARK : LIGHT;
+  const pick = (k) => normalizeColor(t[k]) || base[k];
+  const primary = normalizeColor(t.primary) || '#004AAD';
+  const font = (f) => `'${f}',system-ui,-apple-system,'Segoe UI',sans-serif`;
+  return {
+    '--pb-primary': primary,
+    '--pb-primary-contrast': luminance(primary) > 0.6 ? '#0F172A' : '#ffffff',
+    '--pb-accent': normalizeColor(t.accent) || '#F59E0B',
+    '--pb-dark': normalizeColor(t.dark) || '#0B1B33',
+    '--pb-bg': background || base.background,
+    '--pb-surface': pick('surface'),
+    '--pb-text': pick('text'),
+    '--pb-muted': pick('muted'),
+    '--pb-card': pick('card'),
+    '--pb-border': base.border,
+    '--pb-radius': t.radius || '14px',
+    '--pb-font': font(t.font || 'Inter'),
+    '--pb-heading-font': font(t.headingFont || t.font || 'Inter'),
+  };
+}
+
+function themeVars(theme = {}) {
+  const vars = themeVarsObject(theme);
+  return `:root{${Object.entries(vars).map(([k, v]) => `${k}:${v}`).join(';')}}`;
+}
+
+module.exports = { FONT_NAMES, NAMED_COLORS, normalizeColor, normalizeTheme, themeVarsObject, themeVars, luminance };

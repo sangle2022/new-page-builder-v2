@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "48522000000320951",
+      "name": "New-Page-Builder-V2",
+      "domain": {
+        "id": "50046584191",
+        "name": "new-page-builder-v2-60082699306.development"
+      },
+      "timezone": "Asia/Kolkata",
+      "env": [
+        {
+          "idx": 1,
+          "id": "60082699306",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}

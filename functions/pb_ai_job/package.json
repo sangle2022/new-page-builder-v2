@@ -1,0 +1,10 @@
+{
+	"name": "pb_ai_job",
+	"version": "1.0.0",
+	"description": "Page Builder V2 background AI jobs (Catalyst Job Scheduling)",
+	"main": "index.js",
+	"dependencies": {
+		"axios": "^1.20.0",
+		"zcatalyst-sdk-node": "^3.4.0"
+	}
+}

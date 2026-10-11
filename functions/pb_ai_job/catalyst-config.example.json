@@ -1,0 +1,20 @@
+{
+  "deployment": {
+    "name": "pb_ai_job",
+    "stack": "node24",
+    "type": "job",
+    "env_variables": {
+      "GEMINI_API_KEY": "<same as the main function>",
+      "GEMINI_TEXT_MODEL": "gemini-2.5-flash",
+      "GEMINI_ADVANCED_MODEL": "gemini-2.5-pro",
+      "GEMINI_IMAGE_MODEL": "gemini-3.1-flash-image",
+      "GEMINI_EMBED_MODEL": "gemini-embedding-001",
+      "PAGES_BUCKET": "pb-v2-pages",
+      "MEDIA_BUCKET": "pb-v2-media",
+      "FUNCTION_NAME": "new_page_builder_v_2_function"
+    }
+  },
+  "execution": {
+    "main": "index.js"
+  }
+}

@@ -1,0 +1,16 @@
+{
+	"name": "new_page_builder_v_2_function",
+	"version": "1.0.0",
+	"main": "index.js",
+	"author": "catalystadmin@dsv360.ai",
+	"dependencies": {
+		"axios": "^1.20.0",
+		"express": "^4.22.3",
+		"express-fileupload": "^1.5.2",
+		"zcatalyst-sdk-node": "^3.4.0"
+	},
+	"scripts": {
+		"test": "node test/run.js"
+	},
+	"description": "Page Builder V2 API: pages, approval workflow, publishing, lead capture, AI (Gemini), gallery, Zoho CRM"
+}

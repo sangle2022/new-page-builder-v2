@@ -1,0 +1,59 @@
+# ================================================================
+# AI Email Agent - Zoho Catalyst project (functions + React client)
+# ================================================================
+
+# ---- Secrets / environment (commit only the *.example files) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*-credentials.json
+client_secret*.json
+service-account*.json
+
+# ---- Dependencies ----
+node_modules/
+.pnp
+.pnp.js
+
+# ---- Build output ----
+client/build/
+build/
+dist/
+*.zip
+
+# ---- Catalyst CLI local artifacts ----
+.catalyst/
+catalyst-debug.log
+functions/**/.output/
+
+# ---- Logs & test output ----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+coverage/
+.nyc_output/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ---- Local Claude Code settings ----
+.claude/settings.local.json
+
+# ---- Catalyst function config holds env values (secrets); commit only the example ----
+functions/**/catalyst-config.json
+!functions/**/catalyst-config.example.json
+
+FI_DEMO_PAGEBUILDER-main
